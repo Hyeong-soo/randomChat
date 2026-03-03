@@ -1,0 +1,22 @@
+# Go binary
+/randomchat
+*.exe
+*.test
+*.out
+
+# Node / Cloudflare
+node_modules/
+dist/
+.dev.vars
+.wrangler/
+
+# Config
+wrangler.toml
+wrangler.test.toml
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+*.swp

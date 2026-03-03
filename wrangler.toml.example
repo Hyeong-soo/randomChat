@@ -1,0 +1,29 @@
+name = "randomchat"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+GITHUB_CLIENT_ID = ""
+CALLBACK_URL = "https://randomchat.YOUR_DOMAIN.workers.dev/auth/callback"
+
+# Secrets (set via `wrangler secret put`):
+# GITHUB_CLIENT_SECRET
+
+[durable_objects]
+bindings = [
+  { name = "MATCHMAKER", class_name = "Matchmaker" },
+  { name = "CHATROOM", class_name = "ChatRoom" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["Matchmaker", "ChatRoom"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "randomchat-db"
+database_id = ""
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = ""

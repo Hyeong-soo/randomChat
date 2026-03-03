@@ -1,0 +1,17 @@
+{
+  "name": "randomchat-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute randomchat-db --file=schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.18",
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.0",
+    "vitest": "3.2",
+    "wrangler": "^3.100.0"
+  }
+}
