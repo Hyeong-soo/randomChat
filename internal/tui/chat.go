@@ -201,6 +201,7 @@ func (m ChatModel) View() string {
 	var sb strings.Builder
 
 	// Top: profile box (avatar left, info+graph right)
+	profileLines := 0
 	if m.stranger != nil {
 		var right strings.Builder
 		right.WriteString(m.stranger.Username)
@@ -245,14 +246,17 @@ func (m ChatModel) View() string {
 		} else {
 			content = right.String()
 		}
-		sb.WriteString(ProfileBox.Render(content))
+		profileRendered := ProfileBox.Render(content)
+		sb.WriteString(profileRendered)
 		sb.WriteString("\n")
+		profileLines = strings.Count(profileRendered, "\n") + 2 // +1 for last line, +1 for margin
 	}
 
-	// Middle: messages
-	visibleLines := m.height - 10
-	if visibleLines < 5 {
-		visibleLines = 5
+	// Middle: messages (dynamically sized based on profile height)
+	// Reserve: profileLines + 2 (input + status bar)
+	visibleLines := m.height - profileLines - 2
+	if visibleLines < 3 {
+		visibleLines = 3
 	}
 
 	var msgLines []string
