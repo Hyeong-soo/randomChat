@@ -23,11 +23,15 @@ type App struct {
 	username   string
 	avatarURL  string
 	program    *tea.Program
+	width      int
+	height     int
 }
 
 func NewApp(cfg *config.Config) App {
 	app := App{
 		config: cfg,
+		width:  80,
+		height: 24,
 	}
 
 	// Check for existing session
@@ -66,8 +70,15 @@ func (a App) Init() tea.Cmd {
 func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		// Forward to chat if active
-		if a.screen == ScreenChat {
+		a.width = msg.Width
+		a.height = msg.Height
+		// Forward to active screen
+		switch a.screen {
+		case ScreenLogin:
+			a.loginModel, _ = a.loginModel.Update(msg)
+		case ScreenLobby:
+			a.lobbyModel, _ = a.lobbyModel.Update(msg)
+		case ScreenChat:
 			var cmd tea.Cmd
 			a.chatModel, cmd = a.chatModel.Update(msg)
 			return a, cmd
@@ -107,6 +118,8 @@ func (a App) updateLogin(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Transition to lobby
 		a.screen = ScreenLobby
 		a.lobbyModel = NewLobbyModel(a.config.ServerURL, a.token)
+		a.lobbyModel.width = a.width
+		a.lobbyModel.height = a.height
 		a.lobbyModel.SetProgram(a.program)
 		return a, a.lobbyModel.Init()
 	default:
@@ -122,6 +135,9 @@ func (a App) updateLobby(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Transition to chat
 		a.screen = ScreenChat
 		a.chatModel = NewChatModel(a.config, a.config.ServerURL, a.token, msg.RoomID, msg.Stranger)
+		a.chatModel.width = a.width
+		a.chatModel.height = a.height
+		a.chatModel.textInput.Width = a.width - 4
 		a.chatModel.SetProgram(a.program)
 		return a, a.chatModel.Init()
 	default:
@@ -139,6 +155,8 @@ func (a App) updateChat(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Return to lobby for new match
 		a.screen = ScreenLobby
 		a.lobbyModel = NewLobbyModel(a.config.ServerURL, a.token)
+		a.lobbyModel.width = a.width
+		a.lobbyModel.height = a.height
 		a.lobbyModel.SetProgram(a.program)
 		return a, a.lobbyModel.Init()
 	default:

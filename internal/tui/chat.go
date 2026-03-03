@@ -36,6 +36,7 @@ type ChatModel struct {
 	width        int
 	height       int
 	scrollOff    int
+	bellNext     bool
 	typing       bool
 	lastTyping   time.Time
 	disconnected bool
@@ -81,6 +82,9 @@ func (m ChatModel) Init() tea.Cmd {
 }
 
 func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
+	// Reset bell flag after it has been rendered
+	m.bellNext = false
+
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -133,6 +137,7 @@ func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
 			Timestamp: msg.Timestamp,
 		})
 		m.scrollOff = 0
+		m.bellNext = true
 		return m, nil
 
 	case typingTimeoutMsg:
@@ -197,6 +202,11 @@ func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
 
 func (m ChatModel) View() string {
 	var sb strings.Builder
+
+	// Terminal bell on new incoming message
+	if m.bellNext {
+		sb.WriteString("\a")
+	}
 
 	// Top: profile box (avatar left, info+graph right)
 	if m.stranger != nil {
@@ -281,11 +291,12 @@ func (m ChatModel) View() string {
 	}
 
 	// Bottom: input
+	bar := StatusBar.Width(m.width)
 	if m.disconnected {
-		sb.WriteString(StatusBar.Render("Stranger disconnected. Returning to lobby..."))
+		sb.WriteString(bar.Render("Stranger disconnected. Returning to lobby..."))
 	} else {
 		sb.WriteString(m.textInput.View() + "\n")
-		sb.WriteString(StatusBar.Render("/skip  /quit  /help  |  Esc=skip  PgUp/PgDn=scroll"))
+		sb.WriteString(bar.Render("/skip  /quit  /help  |  Esc=skip  PgUp/PgDn=scroll"))
 	}
 
 	return sb.String()

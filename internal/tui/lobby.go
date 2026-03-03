@@ -12,19 +12,21 @@ import (
 )
 
 type LobbyModel struct {
-	elapsed    time.Duration
-	frame      int
-	wsClient   *ws.Client
-	serverURL  string
-	token      string
-	err        string
-	connected  bool
-	program    *tea.Program
-	cancel     context.CancelFunc
-	retrying   bool
-	retryCount int
-	maxRetries int
+	elapsed     time.Duration
+	frame       int
+	wsClient    *ws.Client
+	serverURL   string
+	token       string
+	err         string
+	connected   bool
+	program     *tea.Program
+	cancel      context.CancelFunc
+	retrying    bool
+	retryCount  int
+	maxRetries  int
 	retryFailed bool
+	width       int
+	height      int
 }
 
 func NewLobbyModel(serverURL, token string) LobbyModel {
@@ -33,6 +35,8 @@ func NewLobbyModel(serverURL, token string) LobbyModel {
 		token:      token,
 		wsClient:   &ws.Client{},
 		maxRetries: 3,
+		width:      80,
+		height:     24,
 	}
 }
 
@@ -50,6 +54,10 @@ type retryMsg struct {
 
 func (m LobbyModel) Update(msg tea.Msg) (LobbyModel, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c", "esc":

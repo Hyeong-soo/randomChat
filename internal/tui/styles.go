@@ -20,8 +20,7 @@ var (
 	StatusBar = lipgloss.NewStyle().
 			Background(lipgloss.Color("236")).
 			Foreground(lipgloss.Color("252")).
-			Padding(0, 1).
-			Width(80)
+			Padding(0, 1)
 
 	ErrorText = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("196")).

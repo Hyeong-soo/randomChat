@@ -23,6 +23,8 @@ type LoginModel struct {
 	errMsg    string
 	serverURL string
 	config    *config.Config
+	width     int
+	height    int
 }
 
 func NewLoginModel(cfg *config.Config) LoginModel {
@@ -30,6 +32,8 @@ func NewLoginModel(cfg *config.Config) LoginModel {
 		status:    loginWaiting,
 		serverURL: cfg.ServerURL,
 		config:    cfg,
+		width:     80,
+		height:    24,
 	}
 }
 
@@ -39,6 +43,10 @@ func (m LoginModel) Init() tea.Cmd {
 
 func (m LoginModel) Update(msg tea.Msg) (LoginModel, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
