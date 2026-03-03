@@ -146,6 +146,9 @@ func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
 		return m, nil
 
 	case StrangerLeftMsg:
+		if m.disconnected {
+			return m, nil
+		}
 		m.disconnected = true
 		m.disconnectAt = time.Now()
 		m.textInput.Blur()
@@ -396,6 +399,9 @@ func (m ChatModel) connectToRoom() tea.Cmd {
 				case protocol.TypeTyping:
 					m.program.Send(StrangerTypingMsg{Typing: msg.State == "typing"})
 				case protocol.TypeConnectionClosed:
+					// Server closes our WS after peer disconnects.
+					// If stranger_left wasn't received yet, treat as disconnect.
+					m.program.Send(StrangerLeftMsg{})
 					return
 				case protocol.TypeError:
 					m.program.Send(ErrorMsg{Err: fmt.Errorf("%s", msg.Message)})
