@@ -1,9 +1,12 @@
-name: CI
+name: CI/CD
 
 on:
   push:
     branches: [main]
   pull_request:
+
+permissions:
+  contents: write
 
 jobs:
   test-go:
@@ -25,3 +28,90 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npx vitest run
+
+  deploy-worker:
+    needs: [test-go, test-worker]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Generate wrangler.toml
+        run: |
+          cat > wrangler.toml << 'TOML'
+          name = "randomchat"
+          main = "src/index.ts"
+          compatibility_date = "2024-12-01"
+
+          [vars]
+          GITHUB_CLIENT_ID = "${{ vars.OAUTH_CLIENT_ID }}"
+          CALLBACK_URL = "${{ vars.CALLBACK_URL }}"
+
+          [durable_objects]
+          bindings = [
+            { name = "MATCHMAKER", class_name = "Matchmaker" },
+            { name = "CHATROOM", class_name = "ChatRoom" }
+          ]
+
+          [[migrations]]
+          tag = "v1"
+          new_sqlite_classes = ["Matchmaker", "ChatRoom"]
+
+          [[d1_databases]]
+          binding = "DB"
+          database_name = "randomchat-db"
+          database_id = "${{ vars.CF_D1_DATABASE_ID }}"
+
+          [[kv_namespaces]]
+          binding = "SESSIONS"
+          id = "${{ vars.CF_KV_NAMESPACE_ID }}"
+          TOML
+      - run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+  release:
+    needs: [test-go, test-worker]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get next version
+        id: version
+        run: |
+          # Get latest tag, default to v0.0.0 if none
+          LATEST=$(git tag -l 'v*' --sort=-v:refname | head -n1)
+          if [ -z "$LATEST" ]; then
+            LATEST="v0.0.0"
+          fi
+          # Bump patch version
+          MAJOR=$(echo "$LATEST" | cut -d. -f1)
+          MINOR=$(echo "$LATEST" | cut -d. -f2)
+          PATCH=$(echo "$LATEST" | cut -d. -f3)
+          NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          echo "tag=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "Next version: $NEXT"
+
+      - name: Create tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.version.outputs.tag }}
+          git push origin ${{ steps.version.outputs.tag }}
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
