@@ -470,8 +470,12 @@ func renderContributionGraph(graph string, total int) string {
 	return sb.String()
 }
 
-// ringBell writes the bell character directly to stderr (bypasses Bubble Tea rendering).
+// ringBell sends a desktop notification via OSC 9 and a BEL to /dev/tty.
 func ringBell() tea.Msg {
-	os.Stderr.WriteString("\a")
+	if f, err := os.OpenFile("/dev/tty", os.O_WRONLY, 0); err == nil {
+		f.WriteString("\x1b]9;New message\x1b\\")
+		f.WriteString("\a")
+		f.Close()
+	}
 	return nil
 }
