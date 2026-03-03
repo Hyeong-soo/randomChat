@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"os"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -36,7 +38,6 @@ type ChatModel struct {
 	width        int
 	height       int
 	scrollOff    int
-	bellNext     bool
 	typing       bool
 	lastTyping   time.Time
 	disconnected bool
@@ -82,9 +83,6 @@ func (m ChatModel) Init() tea.Cmd {
 }
 
 func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
-	// Reset bell flag after it has been rendered
-	m.bellNext = false
-
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -137,8 +135,7 @@ func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
 			Timestamp: msg.Timestamp,
 		})
 		m.scrollOff = 0
-		m.bellNext = true
-		return m, nil
+		return m, ringBell
 
 	case typingTimeoutMsg:
 		if !m.lastTyping.IsZero() && time.Since(m.lastTyping) >= 3*time.Second {
@@ -202,11 +199,6 @@ func (m ChatModel) Update(msg tea.Msg) (ChatModel, tea.Cmd) {
 
 func (m ChatModel) View() string {
 	var sb strings.Builder
-
-	// Terminal bell on new incoming message
-	if m.bellNext {
-		sb.WriteString("\a")
-	}
 
 	// Top: profile box (avatar left, info+graph right)
 	if m.stranger != nil {
@@ -472,4 +464,10 @@ func renderContributionGraph(graph string, total int) string {
 	}
 	sb.WriteString(Subtle.Render(fmt.Sprintf(" %d contributions", total)))
 	return sb.String()
+}
+
+// ringBell writes the bell character directly to stderr (bypasses Bubble Tea rendering).
+func ringBell() tea.Msg {
+	os.Stderr.WriteString("\a")
+	return nil
 }
