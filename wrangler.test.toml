@@ -1,0 +1,27 @@
+name = "randomchat-test"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+GITHUB_CLIENT_ID = "test-client-id"
+GITHUB_CLIENT_SECRET = "test-client-secret"
+CALLBACK_URL = "https://randomchat.test.workers.dev/auth/callback"
+
+[durable_objects]
+bindings = [
+  { name = "MATCHMAKER", class_name = "Matchmaker" },
+  { name = "CHATROOM", class_name = "ChatRoom" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["Matchmaker", "ChatRoom"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "randomchat-test-db"
+database_id = "test-db-id"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "test-sessions-id"

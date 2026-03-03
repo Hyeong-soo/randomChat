@@ -12,7 +12,6 @@ dist/
 
 # Config
 wrangler.toml
-wrangler.test.toml
 
 # Claude Code
 .claude/
