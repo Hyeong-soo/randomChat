@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/henry/randomchat/internal/auth"
-	"github.com/henry/randomchat/internal/config"
+	"github.com/Hyeong-soo/randomChat/internal/auth"
+	"github.com/Hyeong-soo/randomChat/internal/config"
 )
 
 type loginStatus int

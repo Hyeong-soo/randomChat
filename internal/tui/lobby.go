@@ -7,8 +7,8 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/henry/randomchat/internal/protocol"
-	"github.com/henry/randomchat/internal/ws"
+	"github.com/Hyeong-soo/randomChat/internal/protocol"
+	"github.com/Hyeong-soo/randomChat/internal/ws"
 )
 
 type LobbyModel struct {

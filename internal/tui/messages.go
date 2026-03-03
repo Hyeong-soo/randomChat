@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/henry/randomchat/internal/protocol"
+	"github.com/Hyeong-soo/randomChat/internal/protocol"
 )
 
 // Custom Msg types for Bubbletea

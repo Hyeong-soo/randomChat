@@ -1,4 +1,4 @@
-module github.com/henry/randomchat
+module github.com/Hyeong-soo/randomChat
 
 go 1.25.0
 

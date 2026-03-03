@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henry/randomchat/internal/protocol"
-	"github.com/henry/randomchat/internal/ws"
+	"github.com/Hyeong-soo/randomChat/internal/protocol"
+	"github.com/Hyeong-soo/randomChat/internal/ws"
 )
 
 // recvWithTimeout reads from the channel with a timeout.

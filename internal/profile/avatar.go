@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/henry/randomchat/internal/config"
+	"github.com/Hyeong-soo/randomChat/internal/config"
 )
 
 const (

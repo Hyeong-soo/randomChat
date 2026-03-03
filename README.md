@@ -7,11 +7,24 @@ Anonymous terminal chat with random strangers. Authenticate with GitHub, get mat
 ## Quick Start
 
 ```bash
-go install github.com/henry/randomchat/cmd/randomchat@latest
+# One-line install (macOS / Linux)
+curl -sSL https://raw.githubusercontent.com/Hyeong-soo/randomChat/main/install.sh | sh
+
+# Then just run:
 randomchat
 ```
 
 A browser window opens for GitHub login on first run. After that, you're dropped into a matchmaking queue and paired with a stranger.
+
+### Other install methods
+
+```bash
+# Go install
+go install github.com/Hyeong-soo/randomChat/cmd/randomchat@latest
+
+# Or download a binary from GitHub Releases
+# https://github.com/Hyeong-soo/randomChat/releases
+```
 
 ## Features
 
@@ -46,7 +59,7 @@ RandomChat has two parts: a **Cloudflare Workers** backend and a **Go CLI** clie
 
 ```bash
 # Clone and install dependencies
-git clone https://github.com/henry/randomchat.git
+git clone https://github.com/Hyeong-soo/randomChat.git
 cd randomchat
 npm install
 

@@ -2,7 +2,7 @@ package tui
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/henry/randomchat/internal/config"
+	"github.com/Hyeong-soo/randomChat/internal/config"
 )
 
 type Screen int

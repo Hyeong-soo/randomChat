@@ -9,10 +9,10 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/henry/randomchat/internal/config"
-	"github.com/henry/randomchat/internal/profile"
-	"github.com/henry/randomchat/internal/protocol"
-	"github.com/henry/randomchat/internal/ws"
+	"github.com/Hyeong-soo/randomChat/internal/config"
+	"github.com/Hyeong-soo/randomChat/internal/profile"
+	"github.com/Hyeong-soo/randomChat/internal/protocol"
+	"github.com/Hyeong-soo/randomChat/internal/ws"
 )
 
 type ChatMessage struct {

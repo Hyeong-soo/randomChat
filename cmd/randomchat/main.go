@@ -7,8 +7,8 @@ import (
 	"syscall"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/henry/randomchat/internal/config"
-	"github.com/henry/randomchat/internal/tui"
+	"github.com/Hyeong-soo/randomChat/internal/config"
+	"github.com/Hyeong-soo/randomChat/internal/tui"
 )
 
 func main() {

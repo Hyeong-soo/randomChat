@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henry/randomchat/internal/protocol"
+	"github.com/Hyeong-soo/randomChat/internal/protocol"
 	"nhooyr.io/websocket"
 )
 
